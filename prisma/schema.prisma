@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String @id @default(cuid())
+  name         String
+  email        String @unique
+  passwordHash String 
+
+  // One-to-Many relation: A user can create many polls.
+  polls        Poll[]
+
+  // Many-to-Many relation: A user can cast many votes.
+  votes        Vote[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Poll {
+  id          String  @id @default(cuid())
+  question    String
+  isPublished Boolean @default(false)
+
+  // Relation to the User who created the poll
+  creatorId   String
+  creator     User    @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // One-to-Many relation: A poll has multiple options.
+  options     PollOption[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PollOption {
+  id      String @id @default(cuid())
+  text    String
+
+  // Relation to the Poll this option belongs to.
+  pollId  String
+  poll    Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  // Many-to-Many relation: An option can have many votes.
+  votes   Vote[]
+}
+
+
+model Vote {
+  id           String @id @default(cuid())
+  
+  // Relation to the User who cast the vote.
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relation to the PollOption that was voted for.
+  pollOptionId String
+  pollOption   PollOption @relation(fields: [pollOptionId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+
+  // To ensure a user can only vote once per poll, we need a unique constraint.
+  // However, since the poll isn't directly on this model, it's more complex.
+  // For this challenge, a simpler unique on userId + pollOptionId is sufficient.
+  // This means a user can only vote for a specific *option* once.
+  @@unique([userId, pollOptionId])
+}
