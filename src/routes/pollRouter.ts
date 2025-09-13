@@ -3,7 +3,7 @@ import { createPoll, getPoll, voteOnPoll } from "../controllers/pollController.j
 
 export const PollRouter = Router();
 
-PollRouter.post("/", createPoll);
+PollRouter.post("/create", createPoll);
 PollRouter.get("/:id", getPoll);
 PollRouter.post("/:id/vote", voteOnPoll)
 
