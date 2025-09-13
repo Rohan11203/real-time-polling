@@ -94,14 +94,12 @@ Create a new `POST` request.
 
   ```json
   {
-    "question": "What is your favorite programming language?",
-    "options": [
-      { "text": "JavaScript" },
-      { "text": "Python" },
-      { "text": "Rust" }
-    ],
-    "creatorId": "paste-user-id-here"
+    "question": "Best Frontend ?",
+    "creatorId": "cmfikd2xj0000kfzseoer8qxq",
+    "options": ["NExt", "React", "Vue"]
   }
+  ```
+
 
 * **Hit Send. The response will contain the poll and its options. Copy the poll id and one of the pollOption ids for later steps. **
 
